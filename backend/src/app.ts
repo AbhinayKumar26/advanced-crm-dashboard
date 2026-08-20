@@ -5,6 +5,9 @@ import rateLimit from "express-rate-limit";
 
 import { env } from "./config/env";
 import healthRoutes from "./routes/health.routes";
+import authRoutes from "./routes/auth.routes";
+import { ApiError } from "./utils/apiResponse";
+import { errorHandler } from "./middleware/error.middleware";
 
 const app = express();
 
@@ -65,11 +68,16 @@ app.use(
 
 /*
 |--------------------------------------------------------------------------
-| Health Check
+| Health Check & Routes
 |--------------------------------------------------------------------------
 */
 
 app.use("/health", healthRoutes);
+
+app.use(
+  "/api/v1/auth",
+  authRoutes
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -91,11 +99,17 @@ app.get("/api/v1", (_req, res) => {
 |--------------------------------------------------------------------------
 */
 
-app.use((_req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Route not found"
-  });
+app.use((req, res, next) => {
+  const error = new ApiError(404, `Route not found - ${req.originalUrl}`);
+  next(error);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Global Error Handler
+|--------------------------------------------------------------------------
+*/
+
+app.use(errorHandler);
 
 export default app;
