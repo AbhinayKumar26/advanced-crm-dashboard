@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import { env } from "./config/env";
 import healthRoutes from "./routes/health.routes";
 import authRoutes from "./routes/auth.routes";
+import customerRoutes from "./routes/customer.routes";
 import { ApiError } from "./utils/apiResponse";
 import { errorHandler } from "./middleware/error.middleware";
 
@@ -77,6 +78,11 @@ app.use("/health", healthRoutes);
 app.use(
   "/api/v1/auth",
   authRoutes
+);
+
+app.use(
+  "/api/v1/customers",
+  customerRoutes
 );
 
 /*
