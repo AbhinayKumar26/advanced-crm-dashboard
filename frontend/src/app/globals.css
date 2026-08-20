@@ -1,26 +1,60 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 226 47% 8%; /* #0B1020 */
+    --foreground: 210 40% 98%;
+    --card: 222 39% 11%; /* #111827 */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 39% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 238 82% 67%; /* #6366F1 - Indigo */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 215 28% 17%; /* #1E293B */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 215 14% 56%; /* #64748B */
+    --accent: 215 28% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 348 83% 60%; /* #F43F5E - Rose */
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 30% 21%; /* #263247 */
+    --input: 215 30% 21%;
+    --ring: 238 82% 67%;
+    --radius: 0.75rem;
+
+    /* Custom Status Colors */
+    --status-active: 160 84% 39%; /* #10B981 */
+    --status-inactive: 215 14% 56%;
+    --status-prospect: 238 82% 67%;
+    --status-lead: 38 92% 50%; /* #F59E0B */
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom Scrollbar for a premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
 }
