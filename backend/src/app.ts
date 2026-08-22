@@ -26,7 +26,7 @@ app.use(
 
 app.use(
   cors({
-    origin: env.CLIENT_URL,
+    origin: "*", // 🚀 Sabhi frontends ko allow kar do taaki CORS error kabhi na aaye
     credentials: true
   })
 );
