@@ -1,57 +1,42 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { ApiError } from '../utils/apiResponse';
+import User from '../models/User';
 
-import { verifyAccessToken } from "../utils/jwt";
-
-export interface AuthenticatedRequest
-  extends Request {
-  userId?: string;
+// Extend Express Request object to include the authenticated user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
 }
 
-export const requireAuth = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-): void => {
+export const protect = async (req: Request, res: Response, next: NextFunction) => {
+  let token;
+
+  // Check if token exists in the Authorization header
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return next(new ApiError(401, 'Not authorized, no token provided'));
+  }
+
   try {
-    const authorization =
-      req.headers.authorization;
-
-    if (!authorization) {
-      res.status(401).json({
-        success: false,
-        message: "Authentication token is required"
-      });
-
-      return;
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
+    
+    // Fetch user and attach to the request object (exclude password hash)
+    req.user = await User.findById(decoded.id).select('-passwordHash');
+    
+    if (!req.user) {
+      return next(new ApiError(401, 'Not authorized, user no longer exists'));
     }
-
-    const [scheme, token] =
-      authorization.split(" ");
-
-    if (
-      scheme !== "Bearer" ||
-      !token
-    ) {
-      res.status(401).json({
-        success: false,
-        message:
-          "Invalid authorization format"
-      });
-
-      return;
-    }
-
-    const payload =
-      verifyAccessToken(token);
-
-    req.userId = payload.userId;
-
+    
     next();
-  } catch {
-    res.status(401).json({
-      success: false,
-      message:
-        "Invalid or expired authentication token"
-    });
+  } catch (error) {
+    return next(new ApiError(401, 'Not authorized, token failed or expired'));
   }
 };

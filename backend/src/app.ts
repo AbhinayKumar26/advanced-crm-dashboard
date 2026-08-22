@@ -7,6 +7,8 @@ import { env } from "./config/env";
 import healthRoutes from "./routes/health.routes";
 import authRoutes from "./routes/auth.routes";
 import customerRoutes from "./routes/customer.routes";
+import dashboardRoutes from "./routes/dashboard.routes";
+import filterRoutes from "./routes/filter.routes";
 import { ApiError } from "./utils/apiResponse";
 import { errorHandler } from "./middleware/error.middleware";
 
@@ -85,6 +87,9 @@ app.use(
   customerRoutes
 );
 
+app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/filters", filterRoutes);
+
 /*
 |--------------------------------------------------------------------------
 | API Root
@@ -104,6 +109,9 @@ app.get("/api/v1", (_req, res) => {
 | 404 Handler
 |--------------------------------------------------------------------------
 */
+
+
+app.get('/favicon.ico', (_req, res) => { res.status(204).end(); });
 
 app.use((req, res, next) => {
   const error = new ApiError(404, `Route not found - ${req.originalUrl}`);

@@ -2,32 +2,30 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const requiredEnvironmentVariables = [
-  "MONGODB_URI",
-  "JWT_SECRET"
-];
+const getRequiredEnv = (name: string): string => {
+  const value = process.env[name];
 
-for (const variable of requiredEnvironmentVariables) {
-  if (!process.env[variable]) {
-    console.warn(
-      `[WARNING] Environment variable ${variable} is missing: ${variable}`
+  if (!value) {
+    throw new Error(
+      `Missing required environment variable: ${name}`
     );
   }
-}
+
+  return value;
+};
 
 export const env = {
   NODE_ENV: process.env.NODE_ENV || "development",
 
   PORT: Number(process.env.PORT) || 5000,
 
-  MONGODB_URI:
-    process.env.MONGODB_URI ||
-    "mongodb://127.0.0.1:27017/advanced_crm",
+  MONGODB_URI: getRequiredEnv("MONGODB_URI"),
 
   CLIENT_URL:
-    process.env.CLIENT_URL ||
-    "http://localhost:3000",
+    process.env.CLIENT_URL || "http://localhost:3000",
 
-  JWT_SECRET:
-    process.env.JWT_SECRET || "development-secret-change-before-production"
+  JWT_SECRET: getRequiredEnv("JWT_SECRET"),
+
+  JWT_EXPIRES_IN:
+    process.env.JWT_EXPIRES_IN || "1d"
 };
